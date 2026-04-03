@@ -5,7 +5,7 @@ import { jwtDecode } from 'jwt-decode';
 import { loadCaptchaEnginge, LoadCanvasTemplate, validateCaptcha } from 'react-simple-captcha';
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_BASE || `${window.location.protocol}//${window.location.hostname}:5000`;
 
 export default function Login({ onLogin }) {
   const [mode, setMode] = useState('login'); // 'login', 'signup', 'forgot'
