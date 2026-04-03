@@ -8,16 +8,28 @@ const mongoose = require('mongoose');
 const Y = require('yjs');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const User = require('./models/User');
 const Group = require('./models/Group');
 const Document = require('./models/Document');
+const auth = require('./middleware/auth');
 require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 const app = express();
-app.use(cors());
+app.use(helmet());
+app.use(cors({ origin: process.env.CLIENT_URL || '*' }));
 app.use(express.json());
+
+// Rate Limiting to prevent brute force
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+app.use('/login', limiter);
+app.use('/register', limiter);
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/collab-editor';
 
@@ -81,11 +93,11 @@ app.post('/forgot-password', async (req, res) => {
   res.json({ message: 'Password reset link sent to your email' });
 });
 
-// Group Routes
-app.post('/groups', async (req, res) => {
+// Group Routes - PROTECTED
+app.post('/groups', auth, async (req, res) => {
   try {
-    const { name, ownerId } = req.body;
-    const group = new Group({ name, owner: ownerId, members: [ownerId] });
+    const { name } = req.body;
+    const group = new Group({ name, owner: req.user.id, members: [req.user.id] });
     await group.save();
     res.json(group);
   } catch (err) {
@@ -93,8 +105,9 @@ app.post('/groups', async (req, res) => {
   }
 });
 
-app.get('/groups/:userId', async (req, res) => {
+app.get('/groups/:userId', auth, async (req, res) => {
   try {
+    if (req.params.userId !== req.user.id) return res.status(403).json({ error: 'Auth failed' });
     const groups = await Group.find({ members: req.params.userId });
     res.json(groups);
   } catch (err) {
@@ -102,8 +115,8 @@ app.get('/groups/:userId', async (req, res) => {
   }
 });
 
-// API to list all documents
-app.get('/documents', async (req, res) => {
+// API to list all documents - PROTECTED
+app.get('/documents', auth, async (req, res) => {
   try {
     const docs = await Document.find({}, 'name updatedAt');
     res.json(docs);
