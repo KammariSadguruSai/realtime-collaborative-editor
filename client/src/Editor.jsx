@@ -67,7 +67,17 @@ const Editor = ({ docId = 'default-doc', user }) => {
 
         provider.awareness.on('change', () => {
             const awarenessStates = Array.from(provider.awareness.getStates().values());
-            setUsers(awarenessStates.filter(s => s.user).map(s => s.user));
+            const uniqueUsers = [];
+            const namesSeen = new Set();
+            
+            awarenessStates.forEach(s => {
+                if (s.user && !namesSeen.has(s.user.name)) {
+                    uniqueUsers.push(s.user);
+                    namesSeen.add(s.user.name);
+                }
+            });
+            
+            setUsers(uniqueUsers);
         });
 
         return () => {
