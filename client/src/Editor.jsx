@@ -20,7 +20,11 @@ const Editor = ({ docId = 'default-doc', user }) => {
     const [users, setUsers] = useState([]);
     const [status, setStatus] = useState('connecting');
 
+    // Use consistent color for user based on their name
+    const memoizedColor = React.useMemo(() => getRandomColor(), [user?.name]);
+
     useEffect(() => {
+        let isMounted = true;
         const ydoc = new Y.Doc();
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const wsUrl = import.meta.env.VITE_WS_URL || `${protocol}//${window.location.hostname}:5000`;
@@ -55,17 +59,19 @@ const Editor = ({ docId = 'default-doc', user }) => {
         const binding = new QuillBinding(ytext, quill, provider.awareness);
 
         const localUser = {
-            name: user?.name || `User-${Math.floor(Math.random() * 1000)}`,
-            color: getRandomColor()
+            name: user?.name || `Guest-${Math.floor(Math.random() * 1000)}`,
+            color: memoizedColor
         };
 
+        // Important: Set local state for cursors/presence
         provider.awareness.setLocalStateField('user', localUser);
 
         provider.on('status', (event) => {
-            setStatus(event.status);
+            if (isMounted) setStatus(event.status);
         });
 
         provider.awareness.on('change', () => {
+            if (!isMounted) return;
             const awarenessStates = Array.from(provider.awareness.getStates().values());
             const uniqueUsers = [];
             const namesSeen = new Set();
@@ -81,10 +87,16 @@ const Editor = ({ docId = 'default-doc', user }) => {
         });
 
         return () => {
+            isMounted = false;
             provider.disconnect();
+            binding.destroy();
             ydoc.destroy();
+            // Clear quill instance
+            if (editorRef.current) {
+                editorRef.current.innerHTML = '';
+            }
         };
-    }, [docId, user]);
+    }, [docId, user, memoizedColor]);
 
     return (
         <div className="editor-container">
