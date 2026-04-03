@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Users, Plus, UserPlus, FileText } from 'lucide-react';
+import { Users, Plus, UserPlus, FileText, Share2 } from 'lucide-react';
 import './Groups.css';
 
 const API_BASE = 'http://localhost:5000';
@@ -8,7 +8,8 @@ const API_BASE = 'http://localhost:5000';
 export default function Groups({ user, onSelectDoc }) {
   const [groups, setGroups] = useState([]);
   const [newGroupName, setNewGroupName] = useState('');
-  const [showAddGroup, setShowAddGroup] = useState(false);
+  const [inviteCode, setInviteCode] = useState('');
+  const [mode, setMode] = useState(null); // 'create' or 'join'
 
   useEffect(() => {
     fetchGroups();
@@ -28,10 +29,22 @@ export default function Groups({ user, onSelectDoc }) {
     try {
       await axios.post(`${API_BASE}/groups`, { name: newGroupName, ownerId: user.id });
       setNewGroupName('');
-      setShowAddGroup(false);
+      setMode(null);
       fetchGroups();
     } catch (err) {
       alert('Failed to create group');
+    }
+  };
+
+  const handleJoinGroup = async () => {
+    if (!inviteCode) return;
+    try {
+      await axios.post(`${API_BASE}/groups/join`, { inviteCode, userId: user.id });
+      setInviteCode('');
+      setMode(null);
+      fetchGroups();
+    } catch (err) {
+      alert(err.response?.data?.error || 'Failed to join group');
     }
   };
 
@@ -39,19 +52,35 @@ export default function Groups({ user, onSelectDoc }) {
     <div className="groups-sidebar">
       <div className="groups-header">
         <h3><Users size={18} /> My Groups</h3>
-        <button onClick={() => setShowAddGroup(!showAddGroup)} className="icon-btn">
-          <Plus size={20} />
-        </button>
+        <div className="header-actions">
+          <button onClick={() => setMode(mode === 'create' ? null : 'create')} className="icon-btn" title="Create Group">
+            <Plus size={20} />
+          </button>
+          <button onClick={() => setMode(mode === 'join' ? null : 'join')} className="icon-btn" title="Join Group">
+            <UserPlus size={20} />
+          </button>
+        </div>
       </div>
 
-      {showAddGroup && (
+      {mode === 'create' && (
         <div className="add-group-form">
           <input 
-            placeholder="Group Name" 
+            placeholder="New Group Name" 
             value={newGroupName} 
             onChange={(e) => setNewGroupName(e.target.value)} 
           />
           <button onClick={handleCreateGroup} className="primary-btn">Create</button>
+        </div>
+      )}
+
+      {mode === 'join' && (
+        <div className="add-group-form">
+          <input 
+            placeholder="Enter Invite Code (e.g. A1B2C3)" 
+            value={inviteCode} 
+            onChange={(e) => setInviteCode(e.target.value.toUpperCase())} 
+          />
+          <button onClick={handleJoinGroup} className="primary-btn">Join</button>
         </div>
       )}
 
@@ -60,11 +89,15 @@ export default function Groups({ user, onSelectDoc }) {
           <div key={group._id} className="group-item">
             <div className="group-info">
               <span className="group-name">{group.name}</span>
-              <span className="member-count">{group.members.length} members</span>
+              <span className="group-code">Code: <b>{group.invite_code}</b></span>
+              <span className="member-count">{group.members?.length || 0} members</span>
             </div>
             <div className="group-actions">
-              <button title="Invite People"><UserPlus size={16} /></button>
-              <button title="Group Docs" onClick={() => onSelectDoc('group-' + group._id)}><FileText size={16} /></button>
+              <button title="Click to share Invite Code" onClick={() => {
+                navigator.clipboard.writeText(group.invite_code);
+                alert(`Invite Code ${group.invite_code} copied!`);
+              }}><Share2 size={16} /></button>
+              <button title="Open Group Docs" onClick={() => onSelectDoc('group-' + group._id)}><FileText size={16} /></button>
             </div>
           </div>
         ))}

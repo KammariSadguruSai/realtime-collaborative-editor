@@ -226,6 +226,8 @@ app.post('/update-password-admin', async (req, res) => {
 app.get('/groups/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
+    
+    // Get groups where user is owner OR user is in the members JSON array
     const { data, error } = await supabase
       .from('groups')
       .select('*')
@@ -233,8 +235,12 @@ app.get('/groups/:userId', async (req, res) => {
     
     if (error) throw error;
     
-    // Convert Supabase UUID to _id for frontend compatibility
-    const formattedGroups = data.map(g => ({
+    // Manual filtering for membership since Supabase's JSONB query can be tricky in some versions
+    const joinedGroups = data.filter(g => 
+      g.owner_id === userId || (g.members && g.members.includes(userId))
+    );
+
+    const formattedGroups = joinedGroups.map(g => ({
       ...g,
       _id: g.id,
       members: g.members || []
@@ -248,18 +254,52 @@ app.get('/groups/:userId', async (req, res) => {
 app.post('/groups', async (req, res) => {
   try {
     const { name, ownerId } = req.body;
+    const invite_code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    
     const { data, error } = await supabase
       .from('groups')
       .insert({ 
         name, 
         owner_id: ownerId, 
-        members: [] 
+        members: [ownerId],
+        invite_code 
       })
       .select()
       .single();
     
     if (error) throw error;
     res.status(201).json(data);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/groups/join', async (req, res) => {
+  try {
+    const { inviteCode, userId } = req.body;
+    
+    // 1. Find group by invite code
+    const { data: group, error: findError } = await supabase
+      .from('groups')
+      .select('*')
+      .eq('invite_code', inviteCode.toUpperCase())
+      .single();
+    
+    if (!group) return res.status(404).json({ error: 'Invalid invite code' });
+
+    // 2. Add user to members
+    const members = group.members || [];
+    if (!members.includes(userId)) {
+      members.push(userId);
+      const { error: updateError } = await supabase
+        .from('groups')
+        .update({ members })
+        .eq('id', group.id);
+      
+      if (updateError) throw updateError;
+    }
+
+    res.json({ message: 'Successfully joined group!', groupId: group.id });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
