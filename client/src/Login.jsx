@@ -5,7 +5,7 @@ import { jwtDecode } from 'jwt-decode';
 import { loadCaptchaEnginge, LoadCanvasTemplate, validateCaptcha } from 'react-simple-captcha';
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_API_BASE || `${window.location.protocol}//${window.location.hostname}:5000`;
+const API_BASE = 'http://localhost:5000';
 
 export default function Login({ onLogin }) {
   const [mode, setMode] = useState('login'); // 'login', 'signup', 'forgot'
@@ -57,10 +57,10 @@ export default function Login({ onLogin }) {
 
   const handleGoogleSuccess = (credentialResponse) => {
     const decoded = jwtDecode(credentialResponse.credential);
-    onLogin({ 
-      email: decoded.email, 
+    onLogin({
+      email: decoded.email,
       name: decoded.name,
-      picture: decoded.picture 
+      picture: decoded.picture
     });
   };
 
@@ -75,7 +75,7 @@ export default function Login({ onLogin }) {
         <h1 className="login-title">
           {mode === 'login' ? 'Welcome Back' : mode === 'signup' ? 'Create Account' : 'Reset Password'}
         </h1>
-        
+
         <form onSubmit={handleAuth} className="login-form">
           {mode === 'signup' && (
             <>
@@ -109,12 +109,12 @@ export default function Login({ onLogin }) {
           {mode === 'forgot' && (
             <div className="captcha-container">
               <LoadCanvasTemplate />
-              <input 
-                name="captcha" 
-                placeholder="Enter Captcha" 
+              <input
+                name="captcha"
+                placeholder="Enter Captcha"
                 className="captcha-input"
-                onChange={handleChange} 
-                required 
+                onChange={handleChange}
+                required
               />
             </div>
           )}
@@ -122,7 +122,7 @@ export default function Login({ onLogin }) {
           <button type="submit" className="primary-btn" disabled={loading}>
             {loading ? 'Processing...' : mode === 'login' ? 'Sign In' : mode === 'signup' ? 'Create Account' : 'Send Reset Link'}
           </button>
-          
+
           {mode === 'login' && (
             <button type="button" className="text-btn" onClick={() => setMode('forgot')}>
               Forgot Password?
