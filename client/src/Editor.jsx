@@ -41,12 +41,15 @@ const Editor = ({ docId = 'default-doc', user }) => {
             modules: {
                 cursors: true,
                 toolbar: [
-                    [{ header: [1, 2, 3, false] }],
+                    [{ 'font': [] }, { 'size': [] }],
                     ['bold', 'italic', 'underline', 'strike'],
-                    ['blockquote', 'code-block'],
-                    [{ list: 'ordered' }, { list: 'bullet' }],
-                    ['link', 'image'],
-                    ['clean'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'script': 'sub'}, { 'script': 'super' }],
+                    [{ 'header': '1' }, { 'header': '2' }, 'blockquote', 'code-block'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+                    [{ 'direction': 'rtl' }, { 'align': [] }],
+                    ['link', 'image', 'video'],
+                    ['clean']
                 ],
                 history: {
                     userOnly: true
@@ -60,7 +63,8 @@ const Editor = ({ docId = 'default-doc', user }) => {
 
         const localUser = {
             name: user?.name || `Guest-${Math.floor(Math.random() * 1000)}`,
-            color: memoizedColor
+            color: memoizedColor,
+            avatar: user?.avatar_url
         };
 
         // Important: Set local state for cursors/presence
@@ -72,14 +76,18 @@ const Editor = ({ docId = 'default-doc', user }) => {
 
         provider.awareness.on('change', () => {
             if (!isMounted) return;
-            const awarenessStates = Array.from(provider.awareness.getStates().values());
+            // Deduplicate by clientID to prevent "multiple users" showing on refresh
+            const states = provider.awareness.getStates();
             const uniqueUsers = [];
-            const namesSeen = new Set();
+            const idsSeen = new Set();
             
-            awarenessStates.forEach(s => {
-                if (s.user && !namesSeen.has(s.user.name)) {
-                    uniqueUsers.push(s.user);
-                    namesSeen.add(s.user.name);
+            states.forEach((state, clientID) => {
+                if (state.user && !idsSeen.has(state.user.name)) {
+                    uniqueUsers.push({
+                        ...state.user,
+                        clientID
+                    });
+                    idsSeen.add(state.user.name);
                 }
             });
             
@@ -91,7 +99,7 @@ const Editor = ({ docId = 'default-doc', user }) => {
             provider.disconnect();
             binding.destroy();
             ydoc.destroy();
-            // Clear quill instance
+            // Clear quill instance to prevent toolbar duplication
             if (editorRef.current) {
                 editorRef.current.innerHTML = '';
             }
@@ -107,12 +115,16 @@ const Editor = ({ docId = 'default-doc', user }) => {
                 <div className="presence-list">
                     {users.map((u, idx) => (
                         <div 
-                            key={idx} 
+                            key={u.clientID || idx} 
                             className="user-avatar" 
                             style={{ backgroundColor: u.color }}
                             title={u.name}
                         >
-                            {u.name.charAt(0).toUpperCase()}
+                            {u.avatar ? (
+                                <img src={u.avatar} alt={u.name} className="presence-img" />
+                            ) : (
+                                u.name.charAt(0).toUpperCase()
+                            )}
                             <div className="avatar-tooltip">{u.name}</div>
                         </div>
                     ))}
