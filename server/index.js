@@ -22,18 +22,13 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 const app = express();
 app.use(helmet());
-app.use(cors({ origin: process.env.CLIENT_URL || '*' }));
+app.use(cors()); // Allow all for hackathon flexibility
 app.use(express.json());
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100
-});
-app.use('/login', limiter);
-app.use('/register', limiter);
-
-// Auth Routes (Using Supabase Auth)
+// Auth Routes (With debugging)
 app.post('/register', async (req, res) => {
+  console.log('--- Register Attempt ---');
+  console.log('Payload:', req.body);
   try {
     const { email, password, name, organization, institute } = req.body;
     const { data, error } = await supabase.auth.signUp({
@@ -43,10 +38,17 @@ app.post('/register', async (req, res) => {
         data: { name, organization, institute }
       }
     });
-    if (error) throw error;
+
+    if (error) {
+      console.error('Supabase Sign-Up Error:', error.message);
+      return res.status(400).json({ error: error.message });
+    }
+    
+    console.log('Sign-Up Success:', data.user?.id);
     res.json({ user: data.user });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error('Unexpected Internal Error:', err);
+    res.status(500).json({ error: err.message });
   }
 });
 
