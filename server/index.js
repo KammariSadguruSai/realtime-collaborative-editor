@@ -92,14 +92,21 @@ app.post('/forgot-password', async (req, res) => {
 app.post('/update-password', async (req, res) => {
   try {
     const { password, token } = req.body;
-    const { data, error } = await supabase.auth.updateUser({
-      password: password
-    }, {
-      access_token: token
-    });
+    
+    // 1. Verify the recovery token first
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    if (userError) throw userError;
+
+    // 2. Use Admin API to force the password update
+    const { error } = await supabase.auth.admin.updateUserById(
+      user.id,
+      { password: password }
+    );
+    
     if (error) throw error;
     res.json({ message: 'Password updated successfully!' });
   } catch (err) {
+    console.error('Password Update Error:', err.message);
     res.status(400).json({ error: err.message });
   }
 });
