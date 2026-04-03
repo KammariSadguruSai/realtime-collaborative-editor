@@ -104,23 +104,9 @@
   padding: 0 16px;
 }
 
-.google-btn {
+.google-btn-wrapper {
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 12px;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  font-weight: 600;
-  font-size: 15px;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-  cursor: pointer;
-  transition: all 0.2s;
+  width: 100%;
 }
 
-.google-btn:hover {
-  background: var(--bg-secondary);
-  border-color: var(--text-secondary);
-}

@@ -3,6 +3,7 @@ import Editor from './Editor';
 import Login from './Login';
 import './App.css';
 import { Sun, Moon, LogOut, Share2, Plus } from 'lucide-react';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -35,12 +36,14 @@ function App() {
 
   if (!user) {
     return (
-      <div className="app-wrapper">
-        <button className="theme-toggle-fixed" onClick={toggleTheme} aria-label="Toggle theme">
-          {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-        </button>
-        <Login onLogin={handleLogin} />
-      </div>
+      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "PASTE_YOUR_GOOGLE_CLIENT_ID_HERE"}>
+        <div className="app-wrapper">
+          <button className="theme-toggle-fixed" onClick={toggleTheme} aria-label="Toggle theme">
+            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+          </button>
+          <Login onLogin={handleLogin} />
+        </div>
+      </GoogleOAuthProvider>
     );
   }
 
