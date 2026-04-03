@@ -111,7 +111,40 @@ app.post('/update-password', async (req, res) => {
   }
 });
 
-// Groups Routes (Using Supabase)
+app.post('/update-profile', async (req, res) => {
+  try {
+    const { userId, name, organization, institute } = req.body;
+    const { data, error } = await supabase.auth.admin.updateUserById(userId, {
+      user_metadata: { name, organization, institute }
+    });
+    
+    if (error) throw error;
+    res.json({ 
+      user: {
+        id: data.user.id,
+        name: data.user.user_metadata.name,
+        email: data.user.email,
+        organization: data.user.user_metadata.organization,
+        institute: data.user.user_metadata.institute
+      } 
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+app.post('/update-password-admin', async (req, res) => {
+  try {
+    const { userId, password } = req.body;
+    const { error } = await supabase.auth.admin.updateUserById(userId, {
+      password: password
+    });
+    if (error) throw error;
+    res.json({ message: 'Password updated!' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 app.get('/groups/:userId', async (req, res) => {
   try {
     const { userId } = req.params;

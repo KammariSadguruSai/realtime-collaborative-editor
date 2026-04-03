@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Editor from './Editor';
 import Login from './Login';
 import Groups from './Groups';
+import Profile from './Profile';
 import './App.css';
-import { Sun, Moon, LogOut, Share2, Plus } from 'lucide-react';
+import { Sun, Moon, LogOut, Share2, Plus, User } from 'lucide-react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
     const saved = localStorage.getItem('collab-user');
     return saved ? JSON.parse(saved) : null;
   });
+  const [showProfile, setShowProfile] = useState(false);
 
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('collab-theme') || 'light';
@@ -65,6 +67,13 @@ function App() {
 
   return (
     <div className="app-main">
+      {showProfile && (
+        <Profile 
+          user={user} 
+          onUpdate={handleLogin} 
+          onClose={() => setShowProfile(false)} 
+        />
+      )}
       <header className="app-navbar">
         <div className="logo">
           <div className="logo-icon">C</div>
@@ -94,7 +103,12 @@ function App() {
           </button>
           
           <div className="user-profile">
-            <div className="profile-circle">{user.name.charAt(0).toUpperCase()}</div>
+            <div className="profile-circle" onClick={() => setShowProfile(true)}>
+              {user.name?.charAt(0).toUpperCase()}
+            </div>
+            <button className="icon-btn" onClick={() => setShowProfile(true)} title="Profile">
+              <User size={18} />
+            </button>
             <button className="icon-btn logout-btn" onClick={handleLogout} title="Log Out">
               <LogOut size={18} />
             </button>
