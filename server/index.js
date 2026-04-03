@@ -235,10 +235,19 @@ app.get('/groups/:userId', async (req, res) => {
     
     if (error) throw error;
     
-    // Manual filtering for membership since Supabase's JSONB query can be tricky in some versions
-    const joinedGroups = data.filter(g => 
-      g.owner_id === userId || (g.members && g.members.includes(userId))
-    );
+    // Manual filtering for membership and patching missing invite codes
+    const joinedGroups = [];
+    for (const g of data) {
+      if (g.owner_id === userId || (g.members && g.members.includes(userId))) {
+        // PATCH: If group is missing an invite code, create one on the fly
+        if (!g.invite_code) {
+          const newCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+          await supabase.from('groups').update({ invite_code: newCode }).eq('id', g.id);
+          g.invite_code = newCode;
+        }
+        joinedGroups.push(g);
+      }
+    }
 
     const formattedGroups = joinedGroups.map(g => ({
       ...g,
