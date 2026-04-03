@@ -22,7 +22,8 @@ const Editor = ({ docId = 'default-doc', user }) => {
 
     useEffect(() => {
         const ydoc = new Y.Doc();
-        const wsUrl = `ws://${window.location.hostname}:5000`;
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = import.meta.env.VITE_WS_URL || `${protocol}//${window.location.hostname}:5000`;
         const provider = new WebsocketProvider(
             wsUrl,
             docId,
