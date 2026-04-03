@@ -111,6 +111,49 @@ app.post('/update-password', async (req, res) => {
   }
 });
 
+// Groups Routes (Using Supabase)
+app.get('/groups/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { data, error } = await supabase
+      .from('groups')
+      .select('*')
+      .or(`owner_id.eq.${userId}`);
+    
+    if (error) throw error;
+    
+    // Convert Supabase UUID to _id for frontend compatibility
+    const formattedGroups = data.map(g => ({
+      ...g,
+      _id: g.id,
+      members: g.members || []
+    }));
+    res.json(formattedGroups);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/groups', async (req, res) => {
+  try {
+    const { name, ownerId } = req.body;
+    const { data, error } = await supabase
+      .from('groups')
+      .insert({ 
+        name, 
+        owner_id: ownerId, 
+        members: [] 
+      })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    res.status(201).json(data);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ noServer: true });
 
