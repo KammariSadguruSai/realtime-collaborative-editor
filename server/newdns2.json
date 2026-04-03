@@ -1,0 +1,44 @@
+﻿[
+    {
+        "NameTarget":  "ac-mfohj0v-shard-00-02.gbqbmt4.mongodb.net",
+        "Priority":  0,
+        "Weight":  0,
+        "Port":  27017,
+        "Name":  "_mongodb._tcp.cluster0.gbqbmt4.mongodb.net",
+        "Type":  33,
+        "CharacterSet":  1,
+        "Section":  1,
+        "DataLength":  16,
+        "TTL":  60,
+        "QueryType":  33,
+        "Target":  "ac-mfohj0v-shard-00-02.gbqbmt4.mongodb.net"
+    },
+    {
+        "NameTarget":  "ac-mfohj0v-shard-00-00.gbqbmt4.mongodb.net",
+        "Priority":  0,
+        "Weight":  0,
+        "Port":  27017,
+        "Name":  "_mongodb._tcp.cluster0.gbqbmt4.mongodb.net",
+        "Type":  33,
+        "CharacterSet":  1,
+        "Section":  1,
+        "DataLength":  16,
+        "TTL":  60,
+        "QueryType":  33,
+        "Target":  "ac-mfohj0v-shard-00-00.gbqbmt4.mongodb.net"
+    },
+    {
+        "NameTarget":  "ac-mfohj0v-shard-00-01.gbqbmt4.mongodb.net",
+        "Priority":  0,
+        "Weight":  0,
+        "Port":  27017,
+        "Name":  "_mongodb._tcp.cluster0.gbqbmt4.mongodb.net",
+        "Type":  33,
+        "CharacterSet":  1,
+        "Section":  1,
+        "DataLength":  16,
+        "TTL":  60,
+        "QueryType":  33,
+        "Target":  "ac-mfohj0v-shard-00-01.gbqbmt4.mongodb.net"
+    }
+]
