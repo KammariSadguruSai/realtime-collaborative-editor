@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Editor from './Editor';
 import Login from './Login';
+import Groups from './Groups';
 import './App.css';
 import { Sun, Moon, LogOut, Share2, Plus } from 'lucide-react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -32,6 +33,18 @@ function App() {
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem('collab-user');
+  };
+
+  const getDocId = () => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('doc') || 'shared-document';
+  };
+
+  const [currentDoc, setCurrentDoc] = useState(getDocId());
+
+  const handleSelectDoc = (docId) => {
+    setCurrentDoc(docId);
+    window.history.pushState({}, '', `?doc=${docId}`);
   };
 
   if (!user) {
@@ -90,7 +103,10 @@ function App() {
       </header>
       
       <main className="content">
-        <Editor docId={docId} user={user} />
+        <Groups user={user} onSelectDoc={handleSelectDoc} />
+        <div className="editor-view">
+          <Editor docId={currentDoc} user={user} />
+        </div>
       </main>
     </div>
   );
