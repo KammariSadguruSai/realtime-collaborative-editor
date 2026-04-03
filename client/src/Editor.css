@@ -1,0 +1,195 @@
+.editor-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  animation: slideUpFade 0.4s ease-out forwards;
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.editor-header {
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+}
+
+.status-badge {
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.status-badge::before {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-badge[data-status="connected"]::before { background: #10b981; box-shadow: 0 0 5px #10b981; }
+.status-badge[data-status="connecting"]::before { background: #f59e0b; }
+
+.presence-list {
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.85rem;
+  margin-left: -8px;
+  transition: transform 0.2s;
+  position: relative;
+  cursor: pointer;
+}
+
+.user-avatar:first-child { margin-left: 0; }
+.user-avatar:hover { transform: translateY(-2px); z-index: 10; }
+
+.avatar-tooltip {
+  position: absolute;
+  top: -36px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.user-avatar:hover .avatar-tooltip { opacity: 1; }
+
+.user-count {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-left: 12px;
+}
+
+.editor-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+/* Customizing Quill toolbar */
+.ql-toolbar.ql-snow {
+  border: none !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  padding: 12px 24px !important;
+  background: var(--bg-primary) !important;
+  font-family: inherit !important;
+}
+
+.ql-snow.ql-toolbar button {
+  border-radius: 4px;
+}
+
+.ql-snow.ql-toolbar button:hover {
+  background: var(--border-color) !important;
+}
+
+.ql-snow.ql-toolbar .ql-picker-label, 
+.ql-snow .ql-toolbar .ql-picker-label {
+  color: var(--text-primary) !important;
+  border: 1px solid transparent;
+}
+
+.ql-snow .ql-stroke {
+  stroke: var(--text-secondary) !important;
+}
+
+.ql-snow .ql-fill, .ql-snow .ql-stroke.ql-fill {
+  fill: var(--text-secondary) !important;
+}
+
+.ql-snow.ql-toolbar button:hover .ql-stroke,
+.ql-snow.ql-toolbar button.ql-active .ql-stroke {
+  stroke: var(--accent-color) !important;
+}
+
+.ql-snow.ql-toolbar button:hover .ql-fill,
+.ql-snow.ql-toolbar button.ql-active .ql-fill {
+  fill: var(--accent-color) !important;
+}
+
+.ql-snow .ql-picker-options {
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-md) !important;
+  border-radius: 8px;
+}
+
+.ql-snow .ql-picker-item {
+  color: var(--text-primary) !important;
+}
+
+.ql-snow .ql-picker-item:hover {
+  color: var(--accent-color) !important;
+  background: var(--bg-primary) !important;
+}
+
+.ql-container.ql-snow {
+  border: none !important;
+  font-family: inherit !important;
+  font-size: 1rem !important;
+  background: var(--bg-secondary) !important;
+}
+
+.ql-editor {
+  line-height: 1.6;
+  padding: 40px 60px !important;
+  color: var(--text-primary) !important;
+  min-height: 50vh;
+}
+
+.ql-editor.ql-blank::before {
+  color: var(--text-secondary) !important;
+  font-style: normal;
+  left: 60px !important;
+}
+
+.ql-cursor {
+  z-index: 10;
+}
+.ql-cursor .ql-cursor-label {
+  padding: 4px 8px;
+  font-size: 11px;
+  font-family: inherit;
+  font-weight: 500;
+  color: #fff;
+  border-radius: 4px;
+}
+.ql-cursor .ql-cursor-caret { width: 2px; }

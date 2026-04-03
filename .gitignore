@@ -1,0 +1,7 @@
+node_modules/
+.env
+dist/
+*.log
+dns.json
+dns2.json
+newdns.json
