@@ -25,6 +25,13 @@ export default function Login({ onLogin }) {
     }
   }, [mode]);
 
+  useEffect(() => {
+    // Detect password reset token in URL (Supabase recovery)
+    if (window.location.hash.includes('type=recovery')) {
+      setMode('update-password');
+    }
+  }, []);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -47,9 +54,21 @@ export default function Login({ onLogin }) {
         await axios.post(`${API_BASE}/forgot-password`, { email: formData.email, captcha: true });
         alert('Password reset link sent!');
         setMode('login');
+      } else if (mode === 'update-password') {
+        const hash = window.location.hash;
+        const accessToken = hash.split('access_token=')[1]?.split('&')[0];
+        if (!accessToken) throw new Error('Invalid recovery link');
+
+        await axios.post(`${API_BASE}/update-password`, { 
+          password: formData.password,
+          token: accessToken
+        });
+        alert('Your password has been updated!');
+        window.location.hash = ''; // Clear the sensitive token
+        setMode('login');
       }
     } catch (err) {
-      alert(err.response?.data?.error || 'An error occurred');
+      alert(err.response?.data?.error || err.message || 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -73,9 +92,9 @@ export default function Login({ onLogin }) {
         </div>
 
         <h1 className="login-title">
-          {mode === 'login' ? 'Welcome Back' : mode === 'signup' ? 'Create Account' : 'Reset Password'}
+          {mode === 'login' ? 'Welcome Back' : mode === 'signup' ? 'Create Account' : mode === 'update-password' ? 'Set New Password' : 'Reset Password'}
         </h1>
-
+        
         <form onSubmit={handleAuth} className="login-form">
           {mode === 'signup' && (
             <>
@@ -94,14 +113,16 @@ export default function Login({ onLogin }) {
             </>
           )}
 
-          <div className="input-group">
-            <label>Email address</label>
-            <input name="email" type="email" placeholder="you@example.com" onChange={handleChange} required />
-          </div>
+          {mode !== 'update-password' && (
+            <div className="input-group">
+              <label>Email address</label>
+              <input name="email" type="email" placeholder="you@example.com" onChange={handleChange} required />
+            </div>
+          )}
 
           {mode !== 'forgot' && (
             <div className="input-group">
-              <label>Password</label>
+              <label>{mode === 'update-password' ? 'Enter New Password' : 'Password'}</label>
               <input name="password" type="password" placeholder="••••••••" onChange={handleChange} required />
             </div>
           )}
@@ -109,20 +130,20 @@ export default function Login({ onLogin }) {
           {mode === 'forgot' && (
             <div className="captcha-container">
               <LoadCanvasTemplate />
-              <input
-                name="captcha"
-                placeholder="Enter Captcha"
+              <input 
+                name="captcha" 
+                placeholder="Enter Captcha" 
                 className="captcha-input"
-                onChange={handleChange}
-                required
+                onChange={handleChange} 
+                required 
               />
             </div>
           )}
 
           <button type="submit" className="primary-btn" disabled={loading}>
-            {loading ? 'Processing...' : mode === 'login' ? 'Sign In' : mode === 'signup' ? 'Create Account' : 'Send Reset Link'}
+            {loading ? 'Processing...' : mode === 'login' ? 'Sign In' : mode === 'signup' ? 'Create Account' : mode === 'update-password' ? 'Update Password' : 'Send Reset Link'}
           </button>
-
+          
           {mode === 'login' && (
             <button type="button" className="text-btn" onClick={() => setMode('forgot')}>
               Forgot Password?
@@ -137,6 +158,12 @@ export default function Login({ onLogin }) {
               <GoogleLogin onSuccess={handleGoogleSuccess} theme="filled_blue" />
             </div>
           </>
+        )}
+
+        {mode === 'update-password' && (
+          <button type="button" className="text-btn" onClick={() => setMode('login')}>
+            Back to Sign In
+          </button>
         )}
       </div>
     </div>

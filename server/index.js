@@ -79,9 +79,26 @@ app.post('/login', async (req, res) => {
 app.post('/forgot-password', async (req, res) => {
   try {
     const { email } = req.body;
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: process.env.CLIENT_URL || 'http://localhost:3000'
+    });
     if (error) throw error;
     res.json({ message: 'Reset link sent!' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/update-password', async (req, res) => {
+  try {
+    const { password, token } = req.body;
+    const { data, error } = await supabase.auth.updateUser({
+      password: password
+    }, {
+      access_token: token
+    });
+    if (error) throw error;
+    res.json({ message: 'Password updated successfully!' });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
