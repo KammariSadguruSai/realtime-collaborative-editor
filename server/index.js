@@ -5,8 +5,10 @@ const WebSocket = require('ws');
 const cors = require('cors');
 const Y = require('yjs');
 const helmet = require('helmet');
+const fileUpload = require('express-fileupload');
 const rateLimit = require('express-rate-limit');
 const { createClient } = require('@supabase/supabase-js');
+const { OAuth2Client } = require('google-auth-library');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
@@ -19,18 +21,28 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
 }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+const googleClient = new OAuth2Client(process.env.VITE_GOOGLE_CLIENT_ID);
 
 const app = express();
 app.use(helmet());
 app.use(cors()); // Allow all for hackathon flexibility
 app.use(express.json());
+app.use(fileUpload());
 
-// Auth Routes (With debugging)
+// Auth Routes (With deduplication)
 app.post('/register', async (req, res) => {
   console.log('--- Register Attempt ---');
-  console.log('Payload:', req.body);
   try {
     const { email, password, name, organization, institute } = req.body;
+    
+    // 1. Check if user already exists in Auth
+    const { data: existing, error: checkError } = await supabase.auth.admin.listUsers();
+    const isExistent = existing?.users?.find(u => u.email === email);
+    
+    if (isExistent) {
+      return res.status(400).json({ error: 'Account already exists. Please Sign In.' });
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -39,16 +51,50 @@ app.post('/register', async (req, res) => {
       }
     });
 
-    if (error) {
-      console.error('Supabase Sign-Up Error:', error.message);
-      return res.status(400).json({ error: error.message });
-    }
-    
-    console.log('Sign-Up Success:', data.user?.id);
+    if (error) throw error;
     res.json({ user: data.user });
   } catch (err) {
-    console.error('Unexpected Internal Error:', err);
-    res.status(500).json({ error: err.message });
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/auth/google', async (req, res) => {
+  try {
+    const { token } = req.body;
+    const ticket = await googleClient.verifyIdToken({
+      idToken: token,
+      audience: process.env.VITE_GOOGLE_CLIENT_ID
+    });
+    const payload = ticket.getPayload();
+    const { email, name, picture } = payload;
+
+    // 1. Find or create Supabase user
+    const { data: list, error: listError } = await supabase.auth.admin.listUsers();
+    let user = list?.users?.find(u => u.email === email);
+
+    if (!user) {
+      const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
+        email,
+        email_confirm: true,
+        user_metadata: { name, avatar_url: picture },
+        password: Math.random().toString(36).slice(-12) // Random pwd for social accounts
+      });
+      if (createError) throw createError;
+      user = newUser.user;
+    }
+
+    res.json({ 
+      user: { 
+        id: user.id, 
+        name: user.user_metadata.name, 
+        email: user.email,
+        avatar_url: user.user_metadata.avatar_url,
+        organization: user.user_metadata.organization,
+        institute: user.user_metadata.institute
+      } 
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 });
 
@@ -111,11 +157,42 @@ app.post('/update-password', async (req, res) => {
   }
 });
 
+app.post('/upload-avatar', async (req, res) => {
+  try {
+    if (!req.files || !req.files.avatar) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    const { userId } = req.body;
+    const file = req.files.avatar;
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${userId}-${Date.now()}.${fileExt}`;
+    const filePath = `${fileName}`;
+
+    const { data, error } = await supabase.storage
+      .from('avatars')
+      .upload(filePath, file.data, {
+        contentType: file.mimetype,
+        upsert: true
+      });
+
+    if (error) throw error;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(filePath);
+
+    res.json({ url: publicUrl });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 app.post('/update-profile', async (req, res) => {
   try {
-    const { userId, name, organization, institute } = req.body;
+    const { userId, name, organization, institute, avatar_url } = req.body;
     const { data, error } = await supabase.auth.admin.updateUserById(userId, {
-      user_metadata: { name, organization, institute }
+      user_metadata: { name, organization, institute, avatar_url }
     });
     
     if (error) throw error;
@@ -125,7 +202,8 @@ app.post('/update-profile', async (req, res) => {
         name: data.user.user_metadata.name,
         email: data.user.email,
         organization: data.user.user_metadata.organization,
-        institute: data.user.user_metadata.institute
+        institute: data.user.user_metadata.institute,
+        avatar_url: data.user.user_metadata.avatar_url
       } 
     });
   } catch (err) {

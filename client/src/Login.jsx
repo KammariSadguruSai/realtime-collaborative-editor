@@ -74,13 +74,18 @@ export default function Login({ onLogin }) {
     }
   };
 
-  const handleGoogleSuccess = (credentialResponse) => {
-    const decoded = jwtDecode(credentialResponse.credential);
-    onLogin({
-      email: decoded.email,
-      name: decoded.name,
-      picture: decoded.picture
-    });
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setLoading(true);
+    try {
+      const res = await axios.post(`${API_BASE}/auth/google`, { 
+        token: credentialResponse.credential 
+      });
+      onLogin(res.data.user);
+    } catch (err) {
+      alert(err.response?.data?.error || 'Google Login Failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

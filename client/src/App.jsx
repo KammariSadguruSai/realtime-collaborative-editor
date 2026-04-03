@@ -104,7 +104,11 @@ function App() {
           
           <div className="user-profile">
             <div className="profile-circle" onClick={() => setShowProfile(true)}>
-              {user.name?.charAt(0).toUpperCase()}
+              {user.avatar_url ? (
+                <img src={user.avatar_url} alt="Profile" className="nav-avatar" />
+              ) : (
+                user.name?.charAt(0).toUpperCase()
+              )}
             </div>
             <button className="icon-btn" onClick={() => setShowProfile(true)} title="Profile">
               <User size={18} />

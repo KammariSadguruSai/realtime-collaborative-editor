@@ -10,12 +10,33 @@ export default function Profile({ user, onUpdate, onClose }) {
     name: user.name || '',
     organization: user.organization || '',
     institute: user.institute || '',
+    avatar_url: user.avatar_url || '',
     newPassword: ''
   });
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    const data = new FormData();
+    data.append('avatar', file);
+    data.append('userId', user.id);
+
+    try {
+      const res = await axios.post(`${API_BASE}/upload-avatar`, data);
+      setFormData({ ...formData, avatar_url: res.data.url });
+    } catch (err) {
+      alert('Upload failed');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleUpdate = async (e) => {
@@ -27,12 +48,12 @@ export default function Profile({ user, onUpdate, onClose }) {
         userId: user.id,
         name: formData.name,
         organization: formData.organization,
-        institute: formData.institute
+        institute: formData.institute,
+        avatar_url: formData.avatar_url
       });
 
       // 2. Update Password if provided
       if (formData.newPassword) {
-        // We'll use a direct admin update since we're in the secure profile section
         await axios.post(`${API_BASE}/update-password-admin`, {
           userId: user.id,
           password: formData.newPassword
@@ -58,6 +79,21 @@ export default function Profile({ user, onUpdate, onClose }) {
         </div>
 
         <form onSubmit={handleUpdate} className="profile-form">
+          <div className="avatar-section">
+            <div className="avatar-preview">
+              {formData.avatar_url ? (
+                <img src={formData.avatar_url} alt="Profile" />
+              ) : (
+                <div className="avatar-placeholder">{formData.name?.charAt(0).toUpperCase()}</div>
+              )}
+              {uploading && <div className="avatar-loader">Uploading...</div>}
+            </div>
+            <label className="upload-btn">
+              Change Picture
+              <input type="file" accept="image/*" onChange={handleFileChange} hidden />
+            </label>
+          </div>
+
           <div className="profile-section-title">Personal Information</div>
           <div className="input-group">
             <label><User size={16} /> Full Name</label>
