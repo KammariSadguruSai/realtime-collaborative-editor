@@ -86,10 +86,16 @@ export default function Login({ onLogin }) {
   return (
     <div className="login-container">
       <div className="login-card">
-        <div className="login-tabs">
-          <button className={mode === 'login' ? 'active' : ''} onClick={() => setMode('login')}>Sign In</button>
-          <button className={mode === 'signup' ? 'active' : ''} onClick={() => setMode('signup')}>Sign Up</button>
-        </div>
+        {mode !== 'update-password' && (
+          <div className="login-tabs">
+            <button className={mode === 'login' ? 'active' : ''} onClick={() => setMode('login')}>Sign In</button>
+            <button className={mode === 'signup' ? 'active' : ''} onClick={() => setMode('signup')}>Sign Up</button>
+          </div>
+        )}
+
+        {mode === 'update-password' && (
+          <div className="update-badge">🔐 Password Recovery</div>
+        )}
 
         <h1 className="login-title">
           {mode === 'login' ? 'Welcome Back' : mode === 'signup' ? 'Create Account' : mode === 'update-password' ? 'Set New Password' : 'Reset Password'}
@@ -122,7 +128,7 @@ export default function Login({ onLogin }) {
 
           {mode !== 'forgot' && (
             <div className="input-group">
-              <label>{mode === 'update-password' ? 'Enter New Password' : 'Password'}</label>
+              <label>{mode === 'update-password' ? 'New Password' : 'Password'}</label>
               <input name="password" type="password" placeholder="••••••••" onChange={handleChange} required />
             </div>
           )}
@@ -141,7 +147,7 @@ export default function Login({ onLogin }) {
           )}
 
           <button type="submit" className="primary-btn" disabled={loading}>
-            {loading ? 'Processing...' : mode === 'login' ? 'Sign In' : mode === 'signup' ? 'Create Account' : mode === 'update-password' ? 'Update Password' : 'Send Reset Link'}
+            {loading ? 'Processing...' : mode === 'login' ? 'Sign In' : mode === 'signup' ? 'Create Account' : mode === 'update-password' ? 'Update & Login' : 'Send Reset Link'}
           </button>
           
           {mode === 'login' && (
@@ -160,11 +166,11 @@ export default function Login({ onLogin }) {
           </>
         )}
 
-        {mode === 'update-password' && (
+        {mode === 'update-password' || mode === 'forgot' ? (
           <button type="button" className="text-btn" onClick={() => setMode('login')}>
-            Back to Sign In
+            ← Back to Sign In
           </button>
-        )}
+        ) : null}
       </div>
     </div>
   );
