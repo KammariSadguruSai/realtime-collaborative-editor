@@ -11,7 +11,7 @@
   overflow: hidden;
   animation: slideUpFade 0.4s ease-out forwards;
   height: 100%; /* Force it to take available height */
-  min-height: 500px;
+  min-height: 0; /* CRITICAL for nested scrolling */
 }
 
 @keyframes slideUpFade {
@@ -120,6 +120,7 @@
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  min-height: 0; /* Allow the content area to scroll internally */
 }
 
 /* Customizing Quill toolbar */

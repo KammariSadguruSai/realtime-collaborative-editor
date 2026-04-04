@@ -203,6 +203,7 @@
   justify-content: center;
   height: 100%; /* Take full height of .content */
   overflow: hidden; /* Prevent parent from scrolling */
+  min-height: 0; /* CRITICAL: Allows children with overflow-y to work */
 }
 
 @media (max-width: 768px) {
