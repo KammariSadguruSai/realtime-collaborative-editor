@@ -98,7 +98,6 @@ Full dark and light theme toggle with automatic persistence in `localStorage` �
 ---
 
 
-
 ## 🛠️ Tech Stack
 
 ### Frontend
@@ -448,4 +447,5 @@ This project is licensed under the **MIT License** — feel free to use, modify 
 
 Built with ❤️ for **GUVI Hackathon 2026** using AI-assisted development.
 
-🌐 **Website:** [sadgurusai.in](https://sadgurusai.in)
+🌐 **Website:** [sadgurusai.in](https://sadgurusai.in)  
+🔗 **LinkedIn:** [Kammarisadgurusai](https://linkedin.com/in/kammarisadgurusai)
