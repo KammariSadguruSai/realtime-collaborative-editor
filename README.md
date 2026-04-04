@@ -35,7 +35,7 @@
 ### 🖊️ Real-time Collaboration
 Multiple users edit the same document simultaneously with live cursors showing each other's position and name in real time.
 
-![Real-time Collaboration](./docs/images/realtime-collaboration.png)
+![Real-time Collaboration](./docs/images/realtime-collaboration.png) (./docs/images/realtime-collaboration1.png)
 
 ---
 
