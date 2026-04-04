@@ -453,3 +453,5 @@ This project is licensed under the **MIT License** — feel free to use, modify 
 ## 👨‍💻 Author
 
 Built with ❤️ for **GUVI Hackathon 2026** using AI-assisted development.
+
+🌐 **Website:** [sadgurusai.in](https://sadgurusai.in)
