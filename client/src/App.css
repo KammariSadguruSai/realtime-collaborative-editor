@@ -282,6 +282,32 @@
   justify-content: space-between;
 }
 
+.group-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.back-btn-minimal {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.back-btn-minimal:hover {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
 .group-header-info h3 {
   margin: 0;
   font-size: 1.2rem;

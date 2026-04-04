@@ -4,7 +4,7 @@ import Login from './Login';
 import Groups from './Groups';
 import Profile from './Profile';
 import './App.css';
-import { Sun, Moon, LogOut, Share2, Plus, User } from 'lucide-react';
+import { Sun, Moon, LogOut, Share2, Plus, User, ArrowLeft } from 'lucide-react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function App() {
@@ -139,21 +139,16 @@ function App() {
           {currentDoc.startsWith('group-') && groups.find(g => 'group-' + g._id === currentDoc) && (
             <div className="group-header-premium">
               <div className="group-header-info">
-                <h3>{groups.find(g => 'group-' + g._id === currentDoc).name}</h3>
+                <div className="group-header-left">
+                  <button className="back-btn-minimal" onClick={() => handleSelectDoc('shared-document')}>
+                    <ArrowLeft size={16} />
+                    <span>Back to Public</span>
+                  </button>
+                  <h3>{groups.find(g => 'group-' + g._id === currentDoc).name}</h3>
+                </div>
                 <span className="member-count-badge">
                   {groups.find(g => 'group-' + g._id === currentDoc).members?.length || 0} Members
                 </span>
-              </div>
-              <div className="group-members-pill-list">
-                {groups.find(g => 'group-' + g._id === currentDoc).memberNames?.map((mName, i) => {
-                  const g = groups.find(gx => 'group-' + gx._id === currentDoc);
-                  const isOwner = g.owner_id === g.members[i];
-                  return (
-                    <div key={i} className={`member-pill ${isOwner ? 'is-admin' : ''}`}>
-                      {mName} {isOwner ? '• Admin' : ''}
-                    </div>
-                  );
-                })}
               </div>
             </div>
           )}
