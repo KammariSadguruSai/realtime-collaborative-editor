@@ -11,8 +11,7 @@
 
 ## 🖥️ Live Demo
 
-- **Frontend (Vercel):** [https://your-app.vercel.app](https://your-app.vercel.app)
-- **Backend (Render):** [https://your-backend.onrender.com](https://your-backend.onrender.com)
+- **Frontend (Vercel):** [https://textxeditoronline.vercel.app](https://texteditoronline.vercel.app)
 
 ---
 
@@ -94,16 +93,11 @@ Generate a unique secret document URL shareable only with people you choose — 
 ### 🌗 Dark / Light Theme
 Full dark and light theme toggle with automatic persistence in `localStorage` — your preference is remembered across sessions.
 
-<img src="./docs/images/dark-light-theme.png" alt="Dark Light Theme" width="600" />
+<img src="./docs/images/dark-light-theme.gif" alt="Dark Light Theme" width="600" />
 
 ---
 
-### 📱 Mobile Responsive
-Full mobile support with an adaptive sidebar/editor layout that stacks cleanly on any screen size.
 
-<img src="./docs/images/mobile-responsive.png" alt="Mobile Responsive" width="600" />
-
----
 
 ## 🛠️ Tech Stack
 
