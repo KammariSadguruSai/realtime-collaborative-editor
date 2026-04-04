@@ -11,8 +11,7 @@
 
 ## 🖥️ Live Demo
 
-- **Frontend (Vercel):** [https://your-app.vercel.app](https://your-app.vercel.app)
-- **Backend (Render):** [https://your-backend.onrender.com](https://your-backend.onrender.com)
+- **Frontend (Vercel):** [https://textxeditoronline.vercel.app](https://texteditoronline.vercel.app)
 
 ---
 
