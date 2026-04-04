@@ -200,7 +200,8 @@
   flex-grow: 1;
   padding: 32px 24px;
   display: flex;
-  justify-content: center;
+  flex-direction: column; /* FIX: Stack elements vertically */
+  align-items: center; /* Center children horizontally */
   height: 100%; /* Take full height of .content */
   overflow: hidden; /* Prevent parent from scrolling */
   min-height: 0; /* CRITICAL: Allows children with overflow-y to work */
@@ -288,24 +289,26 @@
   gap: 16px;
 }
 
-.back-btn-minimal {
-  background: transparent;
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary);
-  padding: 6px 12px;
+.back-btn-new-style {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 8px 16px;
   border-radius: 8px;
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 500;
   transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
 }
 
-.back-btn-minimal:hover {
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  border-color: var(--text-secondary);
+.back-btn-new-style:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .group-header-info h3 {

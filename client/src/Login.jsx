@@ -7,7 +7,7 @@ import axios from 'axios';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
 
-export default function Login({ onLogin, notify }) {
+export default function Login({ onLogin }) {
   const [mode, setMode] = useState('login'); // 'login', 'signup', 'forgot'
   const [formData, setFormData] = useState({
     name: '',
@@ -48,27 +48,27 @@ export default function Login({ onLogin, notify }) {
         onLogin(res.data.user);
       } else if (mode === 'forgot') {
         if (!validateCaptcha(formData.captcha)) {
-          notify('Error: Captcha Does Not Match', 'error');
+          alert('Captcha Does Not Match');
           return;
         }
         await axios.post(`${API_BASE}/forgot-password`, { email: formData.email, captcha: true });
-        notify('Success: Password reset link sent!');
+        alert('Password reset link sent!');
         setMode('login');
       } else if (mode === 'update-password') {
         const hash = window.location.hash;
         const accessToken = hash.split('access_token=')[1]?.split('&')[0];
         if (!accessToken) throw new Error('Invalid recovery link');
 
-        await axios.post(`${API_BASE}/update-password`, { 
+        await axios.post(`${API_BASE}/update-password`, {
           password: formData.password,
           token: accessToken
         });
-        notify('Success: Your password has been updated!');
+        alert('Your password has been updated!');
         window.location.hash = ''; // Clear the sensitive token
         setMode('login');
       }
     } catch (err) {
-      notify(err.response?.data?.error || err.message || 'An error occurred', 'error');
+      alert(err.response?.data?.error || err.message || 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -77,12 +77,12 @@ export default function Login({ onLogin, notify }) {
   const handleGoogleSuccess = async (credentialResponse) => {
     setLoading(true);
     try {
-      const res = await axios.post(`${API_BASE}/auth/google`, { 
-        token: credentialResponse.credential 
+      const res = await axios.post(`${API_BASE}/auth/google`, {
+        token: credentialResponse.credential
       });
       onLogin(res.data.user);
     } catch (err) {
-      notify(err.response?.data?.error || 'Google Login Failed', 'error');
+      alert(err.response?.data?.error || 'Google Login Failed');
     } finally {
       setLoading(false);
     }
@@ -105,7 +105,7 @@ export default function Login({ onLogin, notify }) {
         <h1 className="login-title">
           {mode === 'login' ? 'Welcome Back' : mode === 'signup' ? 'Create Account' : mode === 'update-password' ? 'Set New Password' : 'Reset Password'}
         </h1>
-        
+
         <form onSubmit={handleAuth} className="login-form">
           {mode === 'signup' && (
             <>
@@ -141,12 +141,12 @@ export default function Login({ onLogin, notify }) {
           {mode === 'forgot' && (
             <div className="captcha-container">
               <LoadCanvasTemplate />
-              <input 
-                name="captcha" 
-                placeholder="Enter Captcha" 
+              <input
+                name="captcha"
+                placeholder="Enter Captcha"
                 className="captcha-input"
-                onChange={handleChange} 
-                required 
+                onChange={handleChange}
+                required
               />
             </div>
           )}
@@ -154,7 +154,7 @@ export default function Login({ onLogin, notify }) {
           <button type="submit" className="primary-btn" disabled={loading}>
             {loading ? 'Processing...' : mode === 'login' ? 'Sign In' : mode === 'signup' ? 'Create Account' : mode === 'update-password' ? 'Update & Login' : 'Send Reset Link'}
           </button>
-          
+
           {mode === 'login' && (
             <button type="button" className="text-btn" onClick={() => setMode('forgot')}>
               Forgot Password?

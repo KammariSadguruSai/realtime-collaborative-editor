@@ -140,9 +140,9 @@ function App() {
             <div className="group-header-premium">
               <div className="group-header-info">
                 <div className="group-header-left">
-                  <button className="back-btn-minimal" onClick={() => handleSelectDoc('shared-document')}>
+                  <button className="back-btn-new-style" onClick={() => handleSelectDoc('shared-document')}>
                     <ArrowLeft size={16} />
-                    <span>Back to Public</span>
+                    <span>Return Home 🏠</span>
                   </button>
                   <h3>{groups.find(g => 'group-' + g._id === currentDoc).name}</h3>
                 </div>
