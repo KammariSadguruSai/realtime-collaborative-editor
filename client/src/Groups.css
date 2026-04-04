@@ -7,6 +7,7 @@
   padding: 20px;
   animation: slideIn 0.3s ease-out;
   flex-shrink: 0;
+  height: 100%; /* Ensure it spans the full content height */
 }
 
 @media (max-width: 768px) {
@@ -77,6 +78,18 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  flex: 1; /* Take up all space above sidebar-footer */
+  overflow-y: auto; /* Scrollable if many groups exist */
+  padding-right: 4px; /* Space for scrollbar */
+}
+
+/* Custom scrollbar for groups list */
+.groups-list::-webkit-scrollbar {
+  width: 4px;
+}
+.groups-list::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 10px;
 }
 
 .group-item {
@@ -168,4 +181,43 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Sidebar Integrated Footer */
+.sidebar-footer {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.7;
+}
+
+.sidebar-footer span {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.sidebar-footer a {
+  font-size: 0.75rem;
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.sidebar-footer a:hover {
+  text-decoration: underline;
+  color: var(--accent-hover);
+}
+
+@media (max-width: 768px) {
+  .sidebar-footer {
+    border-top: none;
+    margin-top: 10px;
+    padding-top: 0;
+  }
 }

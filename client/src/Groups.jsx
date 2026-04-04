@@ -144,6 +144,10 @@ export default function Groups({ user, onSelectDoc, notify, setAppGroups }) {
           </div>
         ))}
       </div>
+      <div className="sidebar-footer">
+        <span>Built with ❤️ for <strong>GUVI Hackathon 2026</strong></span>
+        <a href="https://linkedin.com/in/kammarisadgurusai" target="_blank" rel="noopener noreferrer">Kammarisadgurusai</a>
+      </div>
     </div>
   );
 }
