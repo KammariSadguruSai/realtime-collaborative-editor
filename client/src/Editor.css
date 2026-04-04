@@ -10,6 +10,8 @@
   box-shadow: var(--shadow-md);
   overflow: hidden;
   animation: slideUpFade 0.4s ease-out forwards;
+  height: 100%; /* Force it to take available height */
+  min-height: 500px;
 }
 
 @keyframes slideUpFade {
@@ -195,6 +197,15 @@
   font-family: inherit !important;
   font-size: 1rem !important;
   background: var(--bg-secondary) !important;
+  flex: 1;
+  overflow-y: auto; /* Internal scrolling */
+}
+
+.ql-editor {
+  line-height: 1.6;
+  padding: 40px 60px !important;
+  color: var(--text-primary) !important;
+  min-height: 100%;
 }
 
 .ql-editor.ql-blank::before {
