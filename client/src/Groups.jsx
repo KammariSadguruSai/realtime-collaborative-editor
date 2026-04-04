@@ -30,7 +30,7 @@ export default function Groups({ user, onSelectDoc }) {
       const res = await axios.post(`${API_BASE}/groups`, { name: newGroupName, ownerId: user.id });
       setNewGroupName('');
       setMode(null);
-      alert(`Group "${newGroupName}" created successfully!`);
+      notify(`Group "${newGroupName}" created successfully!`);
       // Open the new group doc immediately
       onSelectDoc('group-' + res.data.id);
       fetchGroups();
@@ -45,7 +45,7 @@ export default function Groups({ user, onSelectDoc }) {
       const res = await axios.post(`${API_BASE}/groups/join`, { inviteCode, userId: user.id });
       setInviteCode('');
       setMode(null);
-      alert(res.data.message);
+      notify(res.data.message);
       // Open the group doc immediately
       onSelectDoc('group-' + res.data.groupId);
       fetchGroups();
@@ -58,10 +58,10 @@ export default function Groups({ user, onSelectDoc }) {
     if (!window.confirm(`Are you sure you want to delete the group "${groupName}"?`)) return;
     try {
       await axios.delete(`${API_BASE}/groups/${groupId}`);
-      alert(`Group deleted successfully!`);
+      notify(`Group deleted successfully!`);
       fetchGroups();
     } catch (err) {
-      alert(err.response?.data?.error || 'Failed to delete group');
+      notify(err.response?.data?.error || 'Failed to delete group', 'error');
     }
   };
 
@@ -117,7 +117,7 @@ export default function Groups({ user, onSelectDoc }) {
             <div className="group-actions">
               <button title="Click to share Invite Code" onClick={() => {
                 navigator.clipboard.writeText(group.invite_code);
-                alert(`Invite Code ${group.invite_code} copied!`);
+                notify(`Invite Code ${group.invite_code} copied!`);
               }}><Share2 size={16} /></button>
               <button title="Open Group Docs" onClick={() => onSelectDoc('group-' + group._id)}><FileText size={16} /></button>
               {group.owner_id === user.id && (

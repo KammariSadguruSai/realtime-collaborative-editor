@@ -7,7 +7,7 @@ import axios from 'axios';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
 
-export default function Login({ onLogin }) {
+export default function Login({ onLogin, notify }) {
   const [mode, setMode] = useState('login'); // 'login', 'signup', 'forgot'
   const [formData, setFormData] = useState({
     name: '',
@@ -48,11 +48,11 @@ export default function Login({ onLogin }) {
         onLogin(res.data.user);
       } else if (mode === 'forgot') {
         if (!validateCaptcha(formData.captcha)) {
-          alert('Captcha Does Not Match');
+          notify('Error: Captcha Does Not Match', 'error');
           return;
         }
         await axios.post(`${API_BASE}/forgot-password`, { email: formData.email, captcha: true });
-        alert('Password reset link sent!');
+        notify('Success: Password reset link sent!');
         setMode('login');
       } else if (mode === 'update-password') {
         const hash = window.location.hash;
@@ -63,12 +63,12 @@ export default function Login({ onLogin }) {
           password: formData.password,
           token: accessToken
         });
-        alert('Your password has been updated!');
+        notify('Success: Your password has been updated!');
         window.location.hash = ''; // Clear the sensitive token
         setMode('login');
       }
     } catch (err) {
-      alert(err.response?.data?.error || err.message || 'An error occurred');
+      notify(err.response?.data?.error || err.message || 'An error occurred', 'error');
     } finally {
       setLoading(false);
     }
@@ -82,7 +82,7 @@ export default function Login({ onLogin }) {
       });
       onLogin(res.data.user);
     } catch (err) {
-      alert(err.response?.data?.error || 'Google Login Failed');
+      notify(err.response?.data?.error || 'Google Login Failed', 'error');
     } finally {
       setLoading(false);
     }

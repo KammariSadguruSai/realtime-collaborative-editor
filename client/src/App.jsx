@@ -13,6 +13,12 @@ function App() {
     return saved ? JSON.parse(saved) : null;
   });
   const [showProfile, setShowProfile] = useState(false);
+  const [notification, setNotification] = useState(null);
+
+  const notify = (message, type = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
 
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('collab-theme') || 'light';
@@ -56,7 +62,7 @@ function App() {
           <button className="theme-toggle-fixed" onClick={toggleTheme} aria-label="Toggle theme">
             {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
           </button>
-          <Login onLogin={handleLogin} />
+          <Login onLogin={handleLogin} notify={notify} />
         </div>
       </GoogleOAuthProvider>
     );
@@ -67,11 +73,17 @@ function App() {
 
   return (
     <div className="app-main">
+      {notification && (
+        <div className={`toast-notification ${notification.type}`}>
+          {notification.message}
+        </div>
+      )}
       {showProfile && (
         <Profile 
           user={user} 
           onUpdate={handleLogin} 
           onClose={() => setShowProfile(false)} 
+          notify={notify}
         />
       )}
       <header className="app-navbar">
@@ -94,7 +106,7 @@ function App() {
             const url = window.location.href.split('?')[0] + `?doc=${docId}`;
             if (navigator.clipboard) {
               navigator.clipboard.writeText(url).then(() => {
-                alert('Link copied! Share it to collaborate.');
+                notify('Success: Link copied to clipboard!');
               });
             }
           }}>
@@ -121,7 +133,7 @@ function App() {
       </header>
       
       <main className="content">
-        <Groups user={user} onSelectDoc={handleSelectDoc} />
+        <Groups user={user} onSelectDoc={handleSelectDoc} notify={notify} />
         <div className="editor-view">
           <Editor docId={currentDoc} user={user} />
         </div>

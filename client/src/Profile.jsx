@@ -5,7 +5,7 @@ import './Profile.css';
 
 const API_BASE = import.meta.env.VITE_API_BASE || `http://localhost:5000`;
 
-export default function Profile({ user, onUpdate, onClose }) {
+export default function Profile({ user, onUpdate, onClose, notify }) {
   const [formData, setFormData] = useState({
     name: user.name || '',
     organization: user.organization || '',
@@ -33,7 +33,7 @@ export default function Profile({ user, onUpdate, onClose }) {
       const res = await axios.post(`${API_BASE}/upload-avatar`, data);
       setFormData({ ...formData, avatar_url: res.data.url });
     } catch (err) {
-      alert('Upload failed');
+      notify('Upload failed', 'error');
     } finally {
       setUploading(false);
     }
@@ -61,10 +61,10 @@ export default function Profile({ user, onUpdate, onClose }) {
       }
 
       onUpdate(res.data.user);
-      alert('Profile updated successfully!');
+      notify('Profile updated successfully!');
       onClose();
     } catch (err) {
-      alert(err.response?.data?.error || 'Failed to update profile');
+      notify(err.response?.data?.error || 'Failed to update profile', 'error');
     } finally {
       setLoading(false);
     }
