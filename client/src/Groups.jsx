@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Users, Plus, UserPlus, FileText, Share2 } from 'lucide-react';
+import { Users, Plus, UserPlus, FileText, Share2, Trash2 } from 'lucide-react';
 import './Groups.css';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
@@ -45,6 +45,16 @@ export default function Groups({ user, onSelectDoc }) {
       fetchGroups();
     } catch (err) {
       alert(err.response?.data?.error || 'Failed to join group');
+    }
+  };
+
+  const handleDeleteGroup = async (groupId, groupName) => {
+    if (!window.confirm(`Are you sure you want to delete the group "${groupName}"?`)) return;
+    try {
+      await axios.delete(`${API_BASE}/groups/${groupId}`);
+      fetchGroups();
+    } catch (err) {
+      alert('Failed to delete group');
     }
   };
 
@@ -98,6 +108,11 @@ export default function Groups({ user, onSelectDoc }) {
                 alert(`Invite Code ${group.invite_code} copied!`);
               }}><Share2 size={16} /></button>
               <button title="Open Group Docs" onClick={() => onSelectDoc('group-' + group._id)}><FileText size={16} /></button>
+              {group.owner_id === user.id && (
+                <button title="Delete Group" className="delete-btn" onClick={() => handleDeleteGroup(group._id, group.name)}>
+                  <Trash2 size={16} />
+                </button>
+              )}
             </div>
           </div>
         ))}

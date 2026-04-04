@@ -129,3 +129,8 @@
   color: var(--accent-color);
   background-color: var(--border-color);
 }
+
+.group-actions .delete-btn:hover {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+}

@@ -314,6 +314,21 @@ app.post('/groups/join', async (req, res) => {
   }
 });
 
+app.delete('/groups/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { error } = await supabase
+      .from('groups')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+    res.json({ message: 'Group deleted successfully' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ noServer: true });
 
