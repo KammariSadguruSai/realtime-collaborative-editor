@@ -98,12 +98,7 @@ Full dark and light theme toggle with automatic persistence in `localStorage` �
 
 ---
 
-### 📱 Mobile Responsive
-Full mobile support with an adaptive sidebar/editor layout that stacks cleanly on any screen size.
 
-<img src="./docs/images/mobile-responsive.png" alt="Mobile Responsive" width="600" />
-
----
 
 ## 🛠️ Tech Stack
 
