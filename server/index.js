@@ -345,6 +345,36 @@ app.delete('/groups/:id', async (req, res) => {
   }
 });
 
+// --- Revision History Routes ---
+app.post('/revisions', async (req, res) => {
+  try {
+    const { docId, userId, content } = req.body;
+    const { error } = await supabase
+      .from('revisions')
+      .insert({ doc_id: docId, user_id: userId, content, created_at: new Date() });
+    if (error) throw error;
+    res.json({ message: 'Revision saved!' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.get('/revisions/:docId', async (req, res) => {
+  try {
+    const { docId } = req.params;
+    const { data, error } = await supabase
+      .from('revisions')
+      .select('*')
+      .eq('doc_id', docId)
+      .order('created_at', { ascending: false })
+      .limit(20);
+    if (error) throw error;
+    res.json(data);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ noServer: true });
 

@@ -4,8 +4,12 @@ import { WebsocketProvider } from 'y-websocket';
 import Quill from 'quill';
 import { QuillBinding } from 'y-quill';
 import QuillCursors from 'quill-cursors';
+import axios from 'axios';
+import { Clock, Save, X } from 'lucide-react';
 import 'quill/dist/quill.snow.css';
 import './Editor.css';
+
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
 
 Quill.register('modules/cursors', QuillCursors);
 
@@ -19,9 +23,49 @@ const Editor = ({ docId = 'default-doc', user }) => {
     const quillRef = useRef(null);
     const [users, setUsers] = useState([]);
     const [status, setStatus] = useState('connecting');
+    const [revisions, setRevisions] = useState([]);
+    const [showRevisions, setShowRevisions] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     // Use consistent color for user based on their name
     const memoizedColor = React.useMemo(() => getRandomColor(), [user?.name]);
+
+    const handleSaveRevision = async () => {
+        if (!quillRef.current) return;
+        setIsSaving(true);
+        try {
+            const content = quillRef.current.root.innerHTML;
+            await axios.post(`${API_BASE}/revisions`, {
+                docId,
+                userId: user.id || 'anonymous',
+                content
+            });
+            // Show toast or success visually if notify was passed
+            const res = await axios.get(`${API_BASE}/revisions/${docId}`);
+            setRevisions(res.data);
+        } catch (err) {
+            console.error('Failed to save revision');
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleFetchRevisions = async () => {
+        setShowRevisions(true);
+        try {
+            const res = await axios.get(`${API_BASE}/revisions/${docId}`);
+            setRevisions(res.data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const restoreRevision = (content) => {
+        if (!quillRef.current) return;
+        // Broadcast the update by replacing content
+        quillRef.current.clipboard.dangerouslyPasteHTML(content);
+        setShowRevisions(false);
+    };
 
     useEffect(() => {
         let isMounted = true;
@@ -114,6 +158,18 @@ const Editor = ({ docId = 'default-doc', user }) => {
                 <div className="status-badge" data-status={status}>
                     {status === 'connected' ? 'Online' : status === 'connecting' ? 'Connecting' : 'Offline'}
                 </div>
+                
+                <div className="editor-actions-center">
+                    <button className="tool-btn" onClick={handleSaveRevision} disabled={isSaving} title="Save Version Snippet">
+                        <Save size={14} />
+                        <span>{isSaving ? 'Saving...' : 'Save Version'}</span>
+                    </button>
+                    <button className="tool-btn" onClick={handleFetchRevisions} title="View Revision History">
+                        <Clock size={14} />
+                        <span>History</span>
+                    </button>
+                </div>
+
                 <div className="presence-list">
                     {users.map((u, idx) => (
                         <div 
@@ -136,6 +192,34 @@ const Editor = ({ docId = 'default-doc', user }) => {
             <div className="editor-wrapper">
                 <div ref={editorRef} />
             </div>
+
+            {showRevisions && (
+                <div className="modal-overlay">
+                    <div className="modal-content revision-modal">
+                        <div className="modal-header">
+                            <h2>Document History</h2>
+                            <button className="icon-btn" onClick={() => setShowRevisions(false)}><X size={20} /></button>
+                        </div>
+                        <div className="revisions-list">
+                            {revisions.length === 0 ? (
+                                <p className="no-data">No revisions saved yet. Click "Save Version" to create a snapshot.</p>
+                            ) : (
+                                revisions.map((rev, i) => (
+                                    <div key={i} className="revision-card">
+                                        <div className="rev-info">
+                                            <span className="rev-date">{new Date(rev.created_at).toLocaleString()}</span>
+                                        </div>
+                                        <div className="rev-preview" dangerouslySetInnerHTML={{ __html: rev.content.substring(0, 100) + '...' }} />
+                                        <button className="primary-btn sm-btn" onClick={() => restoreRevision(rev.content)}>
+                                            Restore Version
+                                        </button>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
