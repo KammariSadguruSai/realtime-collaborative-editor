@@ -246,12 +246,20 @@ app.get('/groups/:userId', async (req, res) => {
 
     const joinedGroups = [];
     for (const g of groupsData) {
-      if (g.owner_id === userId || (g.members && g.members.includes(userId))) {
+      let memberArray = [];
+      if (Array.isArray(g.members)) {
+        memberArray = g.members;
+      } else if (typeof g.members === 'string') {
+        try { memberArray = JSON.parse(g.members); } catch(e) {}
+      }
+      
+      if (g.owner_id === userId || memberArray.includes(userId)) {
         if (!g.invite_code) {
           const newCode = Math.random().toString(36).substring(2, 8).toUpperCase();
           await supabase.from('groups').update({ invite_code: newCode }).eq('id', g.id);
           g.invite_code = newCode;
         }
+        g._parsedMembers = memberArray;
         joinedGroups.push(g);
       }
     }
@@ -259,8 +267,8 @@ app.get('/groups/:userId', async (req, res) => {
     const formattedGroups = joinedGroups.map(g => ({
       ...g,
       _id: g.id,
-      memberNames: (g.members || []).map(mid => userMap[mid] || 'Unknown User'),
-      members: g.members || []
+      memberNames: g._parsedMembers.map(mid => userMap[mid] || 'Unknown User'),
+      members: g._parsedMembers
     }));
     res.json(formattedGroups);
   } catch (err) {
