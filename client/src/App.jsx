@@ -155,6 +155,9 @@ function App() {
           <Editor docId={currentDoc} user={user} />
         </div>
       </main>
+      <footer className="app-footer">
+        Built with ❤️ for <strong>GUVI Hackathon 2026</strong> by <a href="https://linkedin.com/in/kammarisadgurusai" target="_blank" rel="noopener noreferrer">Kammarisadgurusai</a>
+      </footer>
     </div>
   );
 }
