@@ -228,10 +228,10 @@ app.get('/groups/:userId', async (req, res) => {
     const { userId } = req.params;
     
     // Get groups where user is owner OR user is in the members JSON array
+    // We fetch all and filter in JS to avoid complex JSONB queries in Supabase
     const { data: groupsData, error: groupsError } = await supabase
       .from('groups')
-      .select('*')
-      .or(`owner_id.eq.${userId}`);
+      .select('*');
     
     if (groupsError) throw groupsError;
     
