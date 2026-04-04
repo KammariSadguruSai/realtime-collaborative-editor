@@ -44,6 +44,7 @@ Multiple users edit the same document simultaneously with live cursors showing e
 Create invite-code-based private groups, join via a 6-character code, see full member lists with admin/member role badges, and delete groups as an admin.
 
 <img src="./docs/images/group-management.png" alt="Group Management" width="600" />
+<img src="./docs/images/group-management1.png" alt="Group Management" width="600" />
 
 ---
 
