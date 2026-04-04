@@ -26,6 +26,15 @@
   background: var(--bg-secondary);
 }
 
+@media (max-width: 600px) {
+  .editor-header {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+}
+
 .status-badge {
   font-size: 0.8rem;
   font-weight: 500;
@@ -188,17 +197,22 @@
   background: var(--bg-secondary) !important;
 }
 
-.ql-editor {
-  line-height: 1.6;
-  padding: 40px 60px !important;
-  color: var(--text-primary) !important;
-  min-height: 50vh;
-}
-
 .ql-editor.ql-blank::before {
   color: var(--text-secondary) !important;
   font-style: normal;
   left: 60px !important;
+}
+
+@media (max-width: 600px) {
+  .ql-editor {
+    padding: 20px !important;
+  }
+  .ql-editor.ql-blank::before {
+    left: 20px !important;
+  }
+  .ql-toolbar.ql-snow {
+    padding: 10px !important;
+  }
 }
 
 .ql-cursor {
