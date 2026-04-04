@@ -228,18 +228,25 @@ app.get('/groups/:userId', async (req, res) => {
     const { userId } = req.params;
     
     // Get groups where user is owner OR user is in the members JSON array
-    const { data, error } = await supabase
+    const { data: groupsData, error: groupsError } = await supabase
       .from('groups')
       .select('*')
       .or(`owner_id.eq.${userId}`);
     
-    if (error) throw error;
+    if (groupsError) throw groupsError;
     
-    // Manual filtering for membership and patching missing invite codes
+    // Fetch all users to map IDs to names (for hackathon simplify)
+    const { data: userData, error: userError } = await supabase.auth.admin.listUsers();
+    const userMap = {};
+    if (userData?.users) {
+      userData.users.forEach(u => {
+        userMap[u.id] = u.user_metadata?.name || u.email;
+      });
+    }
+
     const joinedGroups = [];
-    for (const g of data) {
+    for (const g of groupsData) {
       if (g.owner_id === userId || (g.members && g.members.includes(userId))) {
-        // PATCH: If group is missing an invite code, create one on the fly
         if (!g.invite_code) {
           const newCode = Math.random().toString(36).substring(2, 8).toUpperCase();
           await supabase.from('groups').update({ invite_code: newCode }).eq('id', g.id);
@@ -252,6 +259,7 @@ app.get('/groups/:userId', async (req, res) => {
     const formattedGroups = joinedGroups.map(g => ({
       ...g,
       _id: g.id,
+      memberNames: (g.members || []).map(mid => userMap[mid] || 'Unknown User'),
       members: g.members || []
     }));
     res.json(formattedGroups);

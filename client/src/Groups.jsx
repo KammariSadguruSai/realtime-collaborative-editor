@@ -27,9 +27,12 @@ export default function Groups({ user, onSelectDoc }) {
   const handleCreateGroup = async () => {
     if (!newGroupName) return;
     try {
-      await axios.post(`${API_BASE}/groups`, { name: newGroupName, ownerId: user.id });
+      const res = await axios.post(`${API_BASE}/groups`, { name: newGroupName, ownerId: user.id });
       setNewGroupName('');
       setMode(null);
+      alert(`Group "${newGroupName}" created successfully!`);
+      // Open the new group doc immediately
+      onSelectDoc('group-' + res.data.id);
       fetchGroups();
     } catch (err) {
       alert('Failed to create group');
@@ -39,9 +42,12 @@ export default function Groups({ user, onSelectDoc }) {
   const handleJoinGroup = async () => {
     if (!inviteCode) return;
     try {
-      await axios.post(`${API_BASE}/groups/join`, { inviteCode, userId: user.id });
+      const res = await axios.post(`${API_BASE}/groups/join`, { inviteCode, userId: user.id });
       setInviteCode('');
       setMode(null);
+      alert(res.data.message);
+      // Open the group doc immediately
+      onSelectDoc('group-' + res.data.groupId);
       fetchGroups();
     } catch (err) {
       alert(err.response?.data?.error || 'Failed to join group');
@@ -52,9 +58,10 @@ export default function Groups({ user, onSelectDoc }) {
     if (!window.confirm(`Are you sure you want to delete the group "${groupName}"?`)) return;
     try {
       await axios.delete(`${API_BASE}/groups/${groupId}`);
+      alert(`Group deleted successfully!`);
       fetchGroups();
     } catch (err) {
-      alert('Failed to delete group');
+      alert(err.response?.data?.error || 'Failed to delete group');
     }
   };
 
@@ -101,6 +108,11 @@ export default function Groups({ user, onSelectDoc }) {
               <span className="group-name">{group.name}</span>
               <span className="group-code">Code: <b>{group.invite_code}</b></span>
               <span className="member-count">{group.members?.length || 0} members</span>
+              <div className="members-list">
+                {(group.memberNames || []).map((mName, idx) => (
+                  <span key={idx} className="member-name-tag">{mName}</span>
+                ))}
+              </div>
             </div>
             <div className="group-actions">
               <button title="Click to share Invite Code" onClick={() => {
