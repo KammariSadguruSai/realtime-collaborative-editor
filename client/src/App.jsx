@@ -12,6 +12,7 @@ function App() {
     const saved = localStorage.getItem('collab-user');
     return saved ? JSON.parse(saved) : null;
   });
+  const [groups, setGroups] = useState([]);
   const [showProfile, setShowProfile] = useState(false);
   const [notification, setNotification] = useState(null);
 
@@ -133,8 +134,29 @@ function App() {
       </header>
       
       <main className="content">
-        <Groups user={user} onSelectDoc={handleSelectDoc} notify={notify} />
+        <Groups user={user} onSelectDoc={handleSelectDoc} notify={notify} setAppGroups={setGroups} />
         <div className="editor-view">
+          {currentDoc.startsWith('group-') && groups.find(g => 'group-' + g._id === currentDoc) && (
+            <div className="group-header-premium">
+              <div className="group-header-info">
+                <h3>{groups.find(g => 'group-' + g._id === currentDoc).name}</h3>
+                <span className="member-count-badge">
+                  {groups.find(g => 'group-' + g._id === currentDoc).members?.length || 0} Members
+                </span>
+              </div>
+              <div className="group-members-pill-list">
+                {groups.find(g => 'group-' + g._id === currentDoc).memberNames?.map((mName, i) => {
+                  const g = groups.find(gx => 'group-' + gx._id === currentDoc);
+                  const isOwner = g.owner_id === g.members[i];
+                  return (
+                    <div key={i} className={`member-pill ${isOwner ? 'is-admin' : ''}`}>
+                      {mName} {isOwner ? '• Admin' : ''}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
           <Editor docId={currentDoc} user={user} />
         </div>
       </main>

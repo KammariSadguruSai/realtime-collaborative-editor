@@ -5,7 +5,7 @@ import './Groups.css';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
 
-export default function Groups({ user, onSelectDoc }) {
+export default function Groups({ user, onSelectDoc, notify, setAppGroups }) {
   const [groups, setGroups] = useState([]);
   const [newGroupName, setNewGroupName] = useState('');
   const [inviteCode, setInviteCode] = useState('');
@@ -19,6 +19,7 @@ export default function Groups({ user, onSelectDoc }) {
     try {
       const res = await axios.get(`${API_BASE}/groups/${user.id}`);
       setGroups(res.data);
+      if (setAppGroups) setAppGroups(res.data);
     } catch (err) {
       console.error('Failed to fetch groups');
     }

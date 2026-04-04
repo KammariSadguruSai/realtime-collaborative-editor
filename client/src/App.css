@@ -259,3 +259,63 @@
   border-left: 4px solid #ef4444;
 }
 
+/* WhatsApp Style Group Header */
+.group-header-premium {
+  width: 100%;
+  max-width: 1000px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: -10px; /* Overlap with editor slightly for seamless look */
+  z-index: 10;
+}
+
+.group-header-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.group-header-info h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--text-primary);
+}
+
+.member-count-badge {
+  font-size: 0.8rem;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.group-members-pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.member-pill {
+  font-size: 0.75rem;
+  padding: 4px 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 15px;
+  color: var(--text-primary);
+}
+
+.member-pill.is-admin {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  font-weight: 600;
+}
+
