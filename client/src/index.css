@@ -45,24 +45,26 @@ body {
   width: 100%;
 }
 
-/* Custom Scrollbar Styles for a Premium Look */
+/* Bolder & More Visible Scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 12px;  /* Thicker scrollbar */
+  height: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-primary);
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border-color);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-color);
+  background: var(--text-secondary); /* Darker by default */
   border-radius: 10px;
-  border: 2px solid var(--bg-primary);
+  border: 3px solid var(--bg-secondary); /* Give it some breathing room */
+  transition: background 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
+  background: var(--accent-color); /* Turn accent blue on hover */
 }
 
 /* Firefox */
