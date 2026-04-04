@@ -32,17 +32,80 @@
 
 ## ✨ Features
 
-- **Real-time Collaboration** — Multiple users edit the same document simultaneously with live cursors showing each other's position
-- **Group Management** — Create invite-code-based private groups, join groups, see member lists with admin/member roles
-- **Document Persistence** — All document state is persisted in Supabase PostgreSQL so data survives server restarts
-- **Revision History** — Save named document snapshots and restore any prior version
-- **Google OAuth Login** — One-click sign-in via Google, with account deduplication to prevent duplicates
-- **Email/Password Auth** — Traditional signup/login with email, password reset via email link (Supabase Auth)
-- **Profile Management** — Update name, organization, institute, and profile avatar photo with Supabase Storage upload
-- **Private Documents** — Create secret document URLs shareable only with people you choose
-- **In-Site Toast Notifications** — All user feedback (success/error) via custom animated toasts instead of browser `alert()`
-- **Dark/Light Theme** — Full theme toggle with persistent user preference in `localStorage`
-- **Mobile Responsive** — Full mobile support with adaptive sidebar and editor layout
+### 🖊️ Real-time Collaboration
+Multiple users edit the same document simultaneously with live cursors showing each other's position and name in real time.
+
+![Real-time Collaboration](./docs/images/realtime-collaboration.png)
+
+---
+
+### 👥 Group Management
+Create invite-code-based private groups, join via a 6-character code, see full member lists with admin/member role badges, and delete groups as an admin.
+
+![Group Management](./docs/images/group-management.png)
+
+---
+
+### 💾 Document Persistence
+All document state is persisted in Supabase PostgreSQL so your work is never lost, even after a server restart or browser close.
+
+![Document Persistence](./docs/images/document-persistence.png)
+
+---
+
+### 🕐 Revision History
+Save named document snapshots at any point and restore any prior version with a single click.
+
+![Revision History](./docs/images/revision-history.png)
+
+---
+
+### 🔐 Google OAuth Login
+One-click sign-in via Google with automatic account deduplication — no duplicate accounts created on repeated logins.
+
+![Google OAuth Login](./docs/images/google-login.png)
+
+---
+
+### 📧 Email / Password Auth
+Traditional signup/login with email, plus secure password reset via an emailed Supabase recovery link and CAPTCHA verification.
+
+![Email Auth](./docs/images/email-auth.png)
+
+---
+
+### 👤 Profile Management
+Update your display name, organization, and institute. Upload a custom avatar photo stored securely in Supabase Storage.
+
+![Profile Management](./docs/images/profile-management.png)
+
+---
+
+### 🔗 Private Secret Documents
+Generate a unique secret document URL shareable only with people you choose — no login needed to collaborate on it.
+
+![Private Documents](./docs/images/private-documents.png)
+
+---
+
+### 🔔 In-Site Toast Notifications
+All user feedback (success/error) appears as sleek, auto-dismissing in-site notifications instead of intrusive browser `alert()` popups.
+
+![Toast Notifications](./docs/images/toast-notifications.png)
+
+---
+
+### 🌗 Dark / Light Theme
+Full dark and light theme toggle with automatic persistence in `localStorage` — your preference is remembered across sessions.
+
+![Dark Light Theme](./docs/images/dark-light-theme.png)
+
+---
+
+### 📱 Mobile Responsive
+Full mobile support with an adaptive sidebar/editor layout that stacks cleanly on any screen size.
+
+![Mobile Responsive](./docs/images/mobile-responsive.png)
 
 ---
 
