@@ -94,7 +94,7 @@ Generate a unique secret document URL shareable only with people you choose — 
 ### 🌗 Dark / Light Theme
 Full dark and light theme toggle with automatic persistence in `localStorage` — your preference is remembered across sessions.
 
-<img src="./docs/images/dark-light-theme.png" alt="Dark Light Theme" width="600" />
+<img src="./docs/images/dark-light-theme.gif" alt="Dark Light Theme" width="600" />
 
 ---
 
