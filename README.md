@@ -90,12 +90,6 @@ Generate a unique secret document URL shareable only with people you choose — 
 
 ---
 
-### 🔔 In-Site Toast Notifications
-All user feedback (success/error) appears as sleek, auto-dismissing in-site notifications instead of intrusive browser `alert()` popups.
-
-<img src="./docs/images/toast-notifications.png" alt="Toast Notifications" width="600" />
-
----
 
 ### 🌗 Dark / Light Theme
 Full dark and light theme toggle with automatic persistence in `localStorage` — your preference is remembered across sessions.
