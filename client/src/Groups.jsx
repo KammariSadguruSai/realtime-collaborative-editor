@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Users, Plus, UserPlus, FileText, Share2 } from 'lucide-react';
 import './Groups.css';
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
 
 export default function Groups({ user, onSelectDoc }) {
   const [groups, setGroups] = useState([]);

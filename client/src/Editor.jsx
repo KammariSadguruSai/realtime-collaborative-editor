@@ -27,7 +27,9 @@ const Editor = ({ docId = 'default-doc', user }) => {
         let isMounted = true;
         const ydoc = new Y.Doc();
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const wsUrl = import.meta.env.VITE_WS_URL || `${protocol}//${window.location.hostname}:5000`;
+        // If VITE_WS_URL is not set, use window.location if localhost, otherwise user MUST set VITE_WS_URL
+        const wsUrl = import.meta.env.VITE_WS_URL || 
+                      (window.location.hostname === 'localhost' ? `ws://localhost:5000` : `${protocol}//${window.location.hostname.replace('vercel.app', 'onrender.com')}`); // Very specific guess, better to rely on env var
         const provider = new WebsocketProvider(
             wsUrl,
             docId,
