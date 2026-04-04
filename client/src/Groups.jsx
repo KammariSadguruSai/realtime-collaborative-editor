@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Users, Plus, UserPlus, FileText, Share2, Trash2 } from 'lucide-react';
+import { Users, Plus, UserPlus, FileText, Share2, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import './Groups.css';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
@@ -10,6 +10,11 @@ export default function Groups({ user, onSelectDoc, notify, setAppGroups }) {
   const [newGroupName, setNewGroupName] = useState('');
   const [inviteCode, setInviteCode] = useState('');
   const [mode, setMode] = useState(null); // 'create' or 'join'
+  const [expandedGroups, setExpandedGroups] = useState({}); // { groupId: boolean }
+
+  const toggleGroupExpand = (groupId) => {
+    setExpandedGroups(prev => ({ ...prev, [groupId]: !prev[groupId] }));
+  };
 
   useEffect(() => {
     fetchGroups();
@@ -108,12 +113,21 @@ export default function Groups({ user, onSelectDoc, notify, setAppGroups }) {
             <div className="group-info">
               <span className="group-name">{group.name}</span>
               <span className="group-code">Code: <b>{group.invite_code}</b></span>
-              <span className="member-count">{group.members?.length || 0} members</span>
-              <div className="members-list">
-                {(group.memberNames || []).map((mName, idx) => (
-                  <span key={idx} className="member-name-tag">{mName}</span>
-                ))}
+              <div 
+                className="member-dropdown-trigger" 
+                onClick={() => toggleGroupExpand(group._id)}
+              >
+                <span className="member-count">{group.members?.length || 0} members</span>
+                {expandedGroups[group._id] ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
               </div>
+              
+              {expandedGroups[group._id] && (
+                <div className="members-list">
+                  {(group.memberNames || []).map((mName, idx) => (
+                    <span key={idx} className="member-name-tag">{mName}</span>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="group-actions">
               <button title="Click to share Invite Code" onClick={() => {

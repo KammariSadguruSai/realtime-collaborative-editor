@@ -135,6 +135,21 @@
   background-color: rgba(239, 68, 68, 0.1);
 }
 
+.member-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: color 0.2s;
+  user-select: none;
+  margin-top: 4px;
+}
+
+.member-dropdown-trigger:hover {
+  color: var(--accent-color);
+}
+
 .members-list {
   display: flex;
   flex-wrap: wrap;
